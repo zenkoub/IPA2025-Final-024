@@ -1,5 +1,9 @@
 [routers]
-csr1kv ansible_host=10.0.15.64
+# ansible_host=10.0.15.61
+# ansible_host=10.0.15.62
+# ansible_host=10.0.15.63
+ansible_host=10.0.15.64
+# ansible_host=10.0.15.65
 
 [routers:vars]
 ansible_connection=ansible.netcommon.network_cli
@@ -10,4 +14,3 @@ ansible_become=yes
 ansible_become_method=enable
 ansible_become_password=cisco
 ansible_command_timeout=90
-ansible_prompt_regex='R4-Exam#'
