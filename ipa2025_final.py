@@ -148,7 +148,12 @@ while True:
                 elif command == "status":
                     responseMessage = nc.status(studentID, router_ip)
     elif command == "gigabit_status":
-        responseMessage = nm.gigabit_status(router_ip)
+        if not router_ip:
+            responseMessage = "Error: No router IP specified"
+        elif router_ip not in router_ip_list:
+            responseMessage = f"Error: Invalid IP, no {router_ip} in IPA2025"
+        else:
+            responseMessage = nm.gigabit_status(router_ip)
     elif command == "showrun":
         responseMessage = ac.showrun(studentID)
     else:
