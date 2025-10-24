@@ -140,6 +140,13 @@ while True:
 
         elif command == "showrun":
             responseMessage = ac.showrun(studentID, router_ip)
+        
+        elif command == "motd":
+            if len(parts) >= 3:
+                motd_text = " ".join(parts[3:])
+                responseMessage = ac.configure_motd(studentID, router_ip, motd_text)
+            else:
+                responseMessage = nm.read_motd(router_ip)
 
         else:
             responseMessage = "Error: Unknown command"

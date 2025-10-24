@@ -26,8 +26,29 @@ def showrun(studentID, router_ip):
     print("STDOUT:", stdout)
     print("STDERR:", stderr)
 
-    # Check if playbook ran ok
     if "failed=0" in stdout:
         return filename
     else:
         return "Error: Ansible"
+
+def configure_motd(studentID, router_ip, motd_text):
+    router_name = router_name_map.get(router_ip, router_ip)
+
+    command = [
+        "ansible-playbook",
+        "motd_playbook.yaml",
+        "-e", f"motd_text={motd_text}",
+        "-l", router_ip
+    ]
+
+    print("Running command:", " ".join(command))
+
+    result = subprocess.run(command, capture_output=True, text=True)
+    
+    print("STDOUT:\n", result.stdout)
+    print("STDERR:\n", result.stderr)
+
+    if "failed=0" in result.stdout and "unreachable=0" in result.stdout:
+        return f"Ok: success for student {studentID} on {router_name}"
+    else:
+        return f"Error: Ansible for student {studentID} on {router_name}"

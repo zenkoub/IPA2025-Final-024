@@ -1,5 +1,5 @@
 - name: Show running config
-  hosts: "{{ target }}"
+  hosts: routers
   gather_facts: no
   connection: network_cli
   tasks:

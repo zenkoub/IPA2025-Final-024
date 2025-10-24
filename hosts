@@ -1,6 +1,6 @@
 [routers]
-10.0.15.61 ansible_network_os=cisco.ios.ios ansible_user=admin ansible_password=cisco
-10.0.15.62 ansible_network_os=cisco.ios.ios ansible_user=admin ansible_password=cisco
-10.0.15.63 ansible_network_os=cisco.ios.ios ansible_user=admin ansible_password=cisco
-10.0.15.64 ansible_network_os=cisco.ios.ios ansible_user=admin ansible_password=cisco
-10.0.15.65 ansible_network_os=cisco.ios.ios ansible_user=admin ansible_password=cisco
+10.0.15.61 ansible_network_os=ios ansible_user=admin ansible_password=cisco
+10.0.15.62 ansible_network_os=ios ansible_user=admin ansible_password=cisco
+10.0.15.63 ansible_network_os=ios ansible_user=admin ansible_password=cisco
+10.0.15.64 ansible_network_os=ios ansible_user=admin ansible_password=cisco
+10.0.15.65 ansible_network_os=ios ansible_user=admin ansible_password=cisco

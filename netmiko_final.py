@@ -13,6 +13,7 @@ def connect_router(router_ip):
         "password": "cisco",
         "ssh_config_file": False,
         "allow_agent": False,
+        "look_for_keys": False,
         "conn_timeout": 30,
         "global_delay_factor": 2,
     }
@@ -45,3 +46,14 @@ def gigabit_status(router_ip):
         )
         pprint(ans)
         return ans
+
+def read_motd(router_ip):
+    with connect_router(router_ip) as ssh:
+        ssh.send_command("terminal length 0")
+        output = ssh.send_command("show running-config | include banner motd")
+        
+        if output.strip() == "":
+            return "Error: No MOTD Configured"
+        
+        motd = output.split("^C")[1] if "^C" in output else output
+        return motd.strip()

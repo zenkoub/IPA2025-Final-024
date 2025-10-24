@@ -1,0 +1,11 @@
+- name: Configure MOTD banner on router
+  hosts: routers
+  gather_facts: no
+  connection: network_cli
+  vars:
+    ansible_network_os: ios
+  tasks:
+    - name: Set MOTD
+      ios_config:
+        lines:
+          - "banner motd ^C{{ motd_text }}^C"
