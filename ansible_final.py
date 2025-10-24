@@ -20,12 +20,14 @@ def showrun(studentID, router_ip):
     ]
 
     result = subprocess.run(command, capture_output=True, text=True)
-    print(result.stdout)
-    print(result.stderr) # Print stderr for debugging
+    stdout = result.stdout.strip()
+    stderr = result.stderr.strip()
 
-    if "skipping: no hosts matched" in result.stdout:
-        return "Error: No matching host in inventory"
-    elif "failed=" in result.stdout:
-        return "Error: Ansible"
-    else:
+    print("STDOUT:", stdout)
+    print("STDERR:", stderr)
+
+    # Check if playbook ran ok
+    if "failed=0" in stdout:
         return filename
+    else:
+        return "Error: Ansible"
