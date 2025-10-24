@@ -1,4 +1,4 @@
-Authorized users only! Managed by 66070077
+ Authorized users only! Managed by 66070217 
 
 
 IPA-Router4#
@@ -13,9 +13,11 @@ Interface              IP-Address      OK? Method Status                Protocol
 GigabitEthernet1       10.0.15.64      YES NVRAM  up                    up      
 Loopback66070024       172.0.24.1      YES other  up                    up      
 Loopback66070055       172.0.55.1      YES other  administratively down down    
+Loopback66070100       172.1.0.1       YES other  up                    up      
 Loopback66070101       172.1.1.1       YES other  up                    up      
 Loopback66070112       172.1.12.1      YES other  up                    up      
-Loopback66070139       172.1.39.1      YES other  up                    up      
+Loopback66070119       172.1.19.1      YES other  up                    up      
+Loopback66070139       172.1.39.1      YES other  administratively down down    
 Loopback66070179       172.1.79.1      YES other  up                    up      
 Loopback66070191       172.1.91.1      YES other  up                    up      
 Loopback66070244       172.2.44.1      YES other  up                    up      
