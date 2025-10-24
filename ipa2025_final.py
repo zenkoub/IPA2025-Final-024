@@ -116,49 +116,41 @@ while True:
         # set the method (lowercase) and confirm to the room
         current_method = command
         responseMessage = f"Ok: {current_method}"
+
     elif len(parts) >= 3:
         router_ip = parts[1]
         command = parts[2].lower()
-    else:
-        responseMessage = "Error: No command found."
-
-# 5. Complete the logic for each command
-
-    if command in ["create", "delete", "enable", "disable", "status"]:
-        if not router_ip:
-            responseMessage = "Error: No IP specified"
-        elif router_ip not in router_ip_list:
-            responseMessage = f"Error: Invalid IP, no {router_ip} in IPA2025"
-        elif current_method is None:
+        if not current_method:
             responseMessage = "Error: No method specified"
-        elif current_method == "restconf":
-            if command == "create":
-                responseMessage = rc.create(studentID, router_ip)
-            elif command == "delete":
-                responseMessage = rc.delete(studentID, router_ip)
-            elif command == "enable":
-                responseMessage = rc.enable(studentID, router_ip)
-            elif command == "disable":
-                responseMessage = rc.disable(studentID, router_ip)
-            elif command == "status":
-                responseMessage = rc.status(studentID, router_ip)
-        elif current_method == "netconf":
-            if command == "create":
-                responseMessage = nc.create(studentID, router_ip)
-            elif command == "delete":
-                responseMessage = nc.delete(studentID, router_ip)
-            elif command == "enable":
-                responseMessage = nc.enable(studentID, router_ip)
-            elif command == "disable":
-                responseMessage = nc.disable(studentID, router_ip)
-            elif command == "status":
-                responseMessage = nc.status(studentID, router_ip)
+        elif router_ip not in router_ip_list:
+            responseMessage = f"Error: Invalid IP, no {router_ip} in IPA2025"  
+        else:
+            if current_method == "restconf":
+                if command == "create":
+                    responseMessage = rc.create(studentID, router_ip)
+                elif command == "delete":
+                    responseMessage = rc.delete(studentID, router_ip)
+                elif command == "enable":
+                    responseMessage = rc.enable(studentID, router_ip)
+                elif command == "disable":
+                    responseMessage = rc.disable(studentID, router_ip)
+                elif command == "status":
+                    responseMessage = rc.status(studentID, router_ip)
+            elif current_method == "netconf":
+                if command == "create":
+                    responseMessage = nc.create(studentID, router_ip)
+                elif command == "delete":
+                    responseMessage = nc.delete(studentID, router_ip)
+                elif command == "enable":
+                    responseMessage = nc.enable(studentID, router_ip)
+                elif command == "disable":
+                    responseMessage = nc.disable(studentID, router_ip)
+                elif command == "status":
+                    responseMessage = nc.status(studentID, router_ip)
     elif command == "gigabit_status":
         responseMessage = nm.gigabit_status(router_ip)
     elif command == "showrun":
         responseMessage = ac.showrun(studentID)
-    elif command in ["restconf", "netconf"]:
-        pass
     else:
         responseMessage = "Error: No command or unknown command"
         
