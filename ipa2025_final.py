@@ -36,17 +36,19 @@ room_response = requests.get(  # Get the list of rooms
 
 rooms = room_response.json()["items"] # sort the list of rooms in .json
 
+# find room named IPA2025 (if present)
+roomId = None
 for room in rooms:
-    if room["title"] == "IPA2025": # check the desired room title; if id's matched - print title
-        roomId = room["id"]
-        print("Using room:", room["title"])
+    if room.get("title") == "IPA2025":
+        roomId = room.get("id")
+        print("Using room:", room.get("title"))
         break
 
 #######################################################################################
 # 3. Prepare parameters get the latest message for messages API.
 
-# Defines a variable that will hold the roomId
-roomIdToGetMessages = os.environ.get("WEBEX_ROOM_ID")
+# Defines a variable that will hold the roomId. Prefer explicit env var, fall back to discovered roomId
+roomIdToGetMessages = os.environ.get("WEBEX_ROOM_ID") or roomId
 
 current_method = None
 
@@ -94,24 +96,26 @@ while True:
 
     # check if the text of the message starts with the magic character "/" followed by your studentID and a space and followed by a command name
     #  e.g.  "/66070024 create"
-    if message.startswith("/"):
+    if message.startswith("/66070024"):
         try:
             parts = message.split()
             studentID = parts[0][1:]
-            command = parts[1].lower()
+            command = parts[1].strip().lower()
         except IndexError:
             continue
         print(command)
 
         router_ip = None
         method = None
+        
+        print("Raw command:", parts[1])
+        print("Stripped & lower:", command)
 
         # select between "restconf" and "netconf" method
         if command in ["restconf", "netconf"]:
-            current_method = command.capitalize()
+            # set the method (lowercase) and confirm to the room
+            current_method = command
             responseMessage = f"Ok: {current_method}"
-            # e.g. /66070024 create (no IP or method)
-            responseMessage = "Error: No method specified"
         elif len(parts) >= 3:
             router_ip = parts[1]
             command = parts[2].lower()
@@ -125,7 +129,7 @@ while True:
                 responseMessage = "Error: No IP specified"
             elif router_ip not in router_ip_list:
                 responseMessage = f"Error: Invalid IP, no {router_ip} in IPA2025"
-            elif "current_method" not in locals() or current_method is None:
+            elif current_method is None:
                 responseMessage = "Error: No method specified"
             elif current_method == "restconf":
                 if command == "create":
@@ -190,7 +194,7 @@ while True:
             }
         # other commands only send text, or no attached file.
         else:
-            print("Response from RESTCONF:", responseMessage)
+            print("Response:", responseMessage)
 
             postData = {"roomId": roomIdToGetMessages, "text": responseMessage}
             postData = json.dumps(postData)
