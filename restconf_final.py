@@ -12,6 +12,7 @@ basicauth = ("admin", "cisco")
 router_method = None
 
 def check_interface(loopback_name, router_ip, retries=3):
+    # Idempotence Characteristics of Restconf API
     api_url = f"https://{router_ip}/restconf/data/ietf-interfaces:interfaces/interface="
     for i in range(retries):
         resp = requests.get(api_url + loopback_name, auth=basicauth, headers=headers, verify=False)

@@ -16,6 +16,7 @@ def netconf_edit_config(m, netconf_config):
 
 
 def check_interface(studentID, router_ip):
+    # Idempotence Characteristics of Netconf API
     loopback_name = f"Loopback{studentID}"
     m = connect(router_ip)
     netconf_filter = f"""
