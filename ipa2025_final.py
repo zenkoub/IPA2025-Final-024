@@ -200,8 +200,8 @@ while True:
         data=postData,
         headers=HTTPHeaders,
     )
-        
-    print("Webex POST response:", r.status_code, r.text)
+    
+    # print("Webex POST response:", r.status_code, r.text)
         
     if not r.status_code in [200, 201]:
         raise Exception(

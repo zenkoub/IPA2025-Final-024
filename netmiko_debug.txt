@@ -1,5 +1,5 @@
 
-heel
+hello world
 
 
 
@@ -11,7 +11,7 @@ IPA-Router4#
 IPA-Router4#terminal length 0
 IPA-Router4#
 IPA-Router4#show banner motd
-heel
+hello world
 
 IPA-Router4#
 IPA-Router4#exit
