@@ -10,8 +10,10 @@ def connect(router_ip):
         hostkey_verify=False
     )
 
+
 def netconf_edit_config(m, netconf_config):
     return m.edit_config(target="running", config=netconf_config)
+
 
 def check_interface(studentID, router_ip):
     loopback_name = f"Loopback{studentID}"
@@ -36,6 +38,7 @@ def check_interface(studentID, router_ip):
         return 404
     finally:
         m.close_session()
+
 
 def create(studentID, router_ip):
     loopback_name = f"Loopback{studentID}"
@@ -81,6 +84,7 @@ def create(studentID, router_ip):
     finally:
         m.close_session()
 
+
 def delete(studentID, router_ip):
     loopback_name = f"Loopback{studentID}"
     if check_interface(studentID, router_ip) != 200:
@@ -112,16 +116,34 @@ def enable(studentID, router_ip):
     if check_interface(studentID, router_ip) != 200:
         return f"Cannot enable: Interface {loopback_name}"
 
+    last3 = int(str(studentID)[-3:])
+    x = last3 // 100
+    y = last3 % 100
+    if y == 0:
+        y = 1
+    ip_addr = f"172.{x}.{y}.1"
+
     netconf_config = f"""
     <config>
       <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
         <interface>
           <name>{loopback_name}</name>
+          <description>Interface for student {studentID}</description>
+          <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">
+            ianaift:softwareLoopback
+          </type>
           <enabled>true</enabled>
+          <ipv4 xmlns="urn:ietf:params:xml:ns:yang:ietf-ip">
+            <address>
+              <ip>{ip_addr}</ip>
+              <netmask>255.255.255.0</netmask>
+            </address>
+          </ipv4>
         </interface>
       </interfaces>
     </config>
     """
+
     m = connect(router_ip)
     try:
         reply = netconf_edit_config(m, netconf_config)
@@ -129,10 +151,11 @@ def enable(studentID, router_ip):
             return f"Interface {loopback_name} is enabled successfully using Netconf"
         else:
             return f"Cannot enable: Interface {loopback_name}"
-    except:
-        return f"Cannot enable: Interface {loopback_name}"
+    except Exception as e:
+        return f"Cannot enable: Interface {loopback_name} ({str(e)})"
     finally:
         m.close_session()
+
 
 def disable(studentID, router_ip):
     loopback_name = f"Loopback{studentID}"
@@ -160,6 +183,7 @@ def disable(studentID, router_ip):
         return f"Cannot shutdown: Interface {loopback_name} (checked by Netconf)"
     finally:
         m.close_session()
+
 
 def status(studentID, router_ip):
     loopback_name = f"Loopback{studentID}"
