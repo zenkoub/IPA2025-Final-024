@@ -154,7 +154,7 @@ while True:
             elif command == "status":
                 responseMessage = nc.status(studentID, router_ip)
     elif command == "gigabit_status":
-        responseMessage = nm.gigabit_status()
+        responseMessage = nm.gigabit_status(router_ip)
     elif command == "showrun":
         responseMessage = ac.showrun(studentID)
     elif command in ["restconf", "netconf"]:
