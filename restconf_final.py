@@ -23,6 +23,7 @@ def check_interface(loopback_name, router_ip, retries=3):
 
 
 def create(studentID, router_ip):
+    # create loopback API with Restconf
     loopback_name = f"Loopback{studentID}"
     if check_interface(loopback_name, router_ip) == 200:
         return f"Cannot create: Interface {loopback_name}"
@@ -65,6 +66,7 @@ def create(studentID, router_ip):
 
 
 def delete(studentID, router_ip):
+    # delete loopback API with Restconf
     loopback_name = f"Loopback{studentID}"
     if check_interface(loopback_name, router_ip) != 200:
         return f"Cannot delete: Interface {loopback_name}"
@@ -86,6 +88,7 @@ def delete(studentID, router_ip):
 
 
 def enable(studentID, router_ip):
+    # enable loopback API with Restconf
     loopback_name = f"Loopback{studentID}"
     if check_interface(loopback_name, router_ip) != 200:
         return f"Cannot enable: Interface {loopback_name}"
@@ -114,6 +117,7 @@ def enable(studentID, router_ip):
 
 
 def disable(studentID, router_ip):
+    # disable loopback API with Restconf
     loopback_name = f"Loopback{studentID}"
     if check_interface(loopback_name, router_ip) != 200:
         return f"Cannot shutdown: Interface {loopback_name} (checked by Restconf)"
@@ -142,6 +146,7 @@ def disable(studentID, router_ip):
 
 
 def status(studentID, router_ip):
+    # status loopback API with Restconf
     loopback_name = f"Loopback{studentID}"
     api_url_status = f"https://{router_ip}/restconf/data/ietf-interfaces:interfaces-state/interface="
 

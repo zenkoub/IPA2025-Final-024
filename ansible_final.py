@@ -9,6 +9,7 @@ router_name_map = {
 }
 
 def showrun(studentID, router_ip):
+    # show run API with Ansible
     router_name = router_name_map.get(router_ip, router_ip)
     filename = f"show_run_{studentID}_{router_name}.txt"
 
@@ -32,6 +33,7 @@ def showrun(studentID, router_ip):
         return "Error: Ansible"
 
 def configure_motd(studentID, router_ip, motd_text):
+    # configure motd API with Ansible
     router_name = router_name_map.get(router_ip, router_ip)
 
     command = [

@@ -19,6 +19,7 @@ def connect_router(router_ip):
     return ConnectHandler(**device_params, session_log="netmiko_debug.txt")
 
 def gigabit_status(router_ip):
+    # gigabit status with Netmiko
     ans = ""
     with connect_router(router_ip) as ssh:
         ssh.send_command("terminal length 0")
@@ -47,9 +48,10 @@ def gigabit_status(router_ip):
         return ans
 
 def read_motd(router_ip):
+    # read motd API with Netmiko
     with connect_router(router_ip) as ssh:
         ssh.send_command("terminal length 0")
-        output = ssh.send_command("show banner motd")
+        output = ssh.send_command("show banner motd", use_textfsm=True)
         
         if output.strip() == "":
             return "Error: No MOTD Configured"

@@ -42,6 +42,7 @@ def check_interface(studentID, router_ip):
 
 
 def create(studentID, router_ip, enabled=True):
+    # create loopback API with Netconf
     loopback_name = f"Loopback{studentID}"
     if check_interface(studentID, router_ip) == 200:
         return f"Cannot create: Interface {loopback_name} already exists"
@@ -88,6 +89,7 @@ def create(studentID, router_ip, enabled=True):
 
 
 def delete(studentID, router_ip):
+    # delete loopback API with Netconf
     loopback_name = f"Loopback{studentID}"
     if check_interface(studentID, router_ip) != 200:
         return f"Cannot delete: Interface {loopback_name}"
@@ -115,6 +117,7 @@ def delete(studentID, router_ip):
 
 
 def enable(studentID, router_ip):
+    # enable loopback API with Netconf
     loopback_name = f"Loopback{studentID}"
     if check_interface(studentID, router_ip) != 200:
         return f"Cannot enable: Interface {loopback_name} does not exist"
@@ -142,6 +145,7 @@ def enable(studentID, router_ip):
 
 
 def disable(studentID, router_ip):
+    # disable loopback API with Netconf
     loopback_name = f"Loopback{studentID}"
     if check_interface(studentID, router_ip) != 200:
         return f"Cannot disable: Interface {loopback_name} does not exist"
@@ -169,6 +173,7 @@ def disable(studentID, router_ip):
 
 
 def status(studentID, router_ip):
+    # status loopback API with Netconf
     loopback_name = f"Loopback{studentID}"
     time.sleep(1)
     netconf_filter = f"""
