@@ -139,11 +139,10 @@ while True:
             responseMessage = nm.gigabit_status(router_ip)
 
         elif command == "showrun":
-            responseMessage = ac.showrun(studentID)
+            responseMessage = ac.showrun(studentID, router_ip)
 
         else:
             responseMessage = "Error: Unknown command"
-
 
 # 6. Complete the code to post the message to the Webex Teams room.
 

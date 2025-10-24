@@ -1,16 +1,15 @@
----
-- name: Get running configuration of router
-  hosts: routers
+- name: Show running config
+  hosts: "{{ target }}"
   gather_facts: no
   connection: network_cli
   tasks:
-    - name: Run 'show running-config'
+    - name: Get running config
       ios_command:
-        commands:
-          - show running-config
+        commands: show running-config
       register: showrun_output
 
-    - name: Save running config locally
-      copy:
+    - name: Save running config to local file
+      local_action:
+        module: copy
         content: "{{ showrun_output.stdout[0] }}"
-        dest: "./show_run_66070024_R4-Exam.txt"
+        dest: "{{ output_file }}"
