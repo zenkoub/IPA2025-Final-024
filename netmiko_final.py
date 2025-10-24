@@ -13,7 +13,6 @@ def connect_router(router_ip):
         "password": "cisco",
         "ssh_config_file": False,
         "allow_agent": False,
-        "look_for_keys": False,
         "conn_timeout": 30,
         "global_delay_factor": 2,
     }

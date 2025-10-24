@@ -142,7 +142,7 @@ while True:
             responseMessage = ac.showrun(studentID, router_ip)
         
         elif command == "motd":
-            if len(parts) >= 3:
+            if len(parts) >= 4:
                 motd_text = " ".join(parts[3:])
                 responseMessage = ac.configure_motd(studentID, router_ip, motd_text)
             else:

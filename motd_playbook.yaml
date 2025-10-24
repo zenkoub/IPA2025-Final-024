@@ -6,6 +6,6 @@
     ansible_network_os: ios
   tasks:
     - name: Set MOTD
-      ios_config:
-        lines:
-          - "banner motd ^C{{ motd_text }}^C"
+      ios_banner:
+        banner: motd
+        text: "{{ motd_text }}"
