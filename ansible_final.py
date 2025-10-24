@@ -37,7 +37,7 @@ def configure_motd(studentID, router_ip, motd_text):
     command = [
         "ansible-playbook",
         "motd_playbook.yaml",
-        "-e", f"motd_text={motd_text}",
+        "-e", f'motd_text="{motd_text}"',
         "-l", router_ip
     ]
 

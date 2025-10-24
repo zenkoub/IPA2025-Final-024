@@ -1,5 +1,5 @@
 
-hell
+heel
 
 
 
@@ -10,7 +10,8 @@ IPA-Router4#
 IPA-Router4#
 IPA-Router4#terminal length 0
 IPA-Router4#
-IPA-Router4#show running-config | section banner motd
-banner motd ^C
+IPA-Router4#show banner motd
+heel
+
 IPA-Router4#
 IPA-Router4#exit
