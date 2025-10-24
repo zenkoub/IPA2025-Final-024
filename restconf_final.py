@@ -114,7 +114,7 @@ def enable(studentID, router_ip):
 
 def disable(studentID, router_ip):
     loopback_name = f"Loopback{studentID}"
-    if check_interface(loopback_name,, router_ip) != 200:
+    if check_interface(loopback_name, router_ip) != 200:
         return f"Cannot shutdown: Interface {loopback_name} (checked by Restconf)"
     
     yangConfig = {
