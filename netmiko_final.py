@@ -49,7 +49,7 @@ def gigabit_status(router_ip):
 def read_motd(router_ip):
     with connect_router(router_ip) as ssh:
         ssh.send_command("terminal length 0")
-        output = ssh.send_command("show running-config | include banner motd")
+        output = ssh.send_command("show running-config | section banner motd")
         
         if output.strip() == "":
             return "Error: No MOTD Configured"
