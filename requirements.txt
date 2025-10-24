@@ -1,0 +1,11 @@
+requests
+requests-toolbelt
+ncclient
+python-dotenv
+netmiko
+textfsm
+ansible
+ansible-playbook-lint
+ansible-pylibssh
+pprint
+ntc_templates

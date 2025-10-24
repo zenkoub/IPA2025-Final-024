@@ -1,0 +1,16 @@
+---
+- name: Get running configuration of router
+  hosts: routers
+  gather_facts: no
+  connection: network_cli
+  tasks:
+    - name: Run 'show running-config'
+      ios_command:
+        commands:
+          - show running-config
+      register: showrun_output
+
+    - name: Save running config locally
+      copy:
+        content: "{{ showrun_output.stdout[0] }}"
+        dest: "./show_run_66070024_R4-Exam.txt"
