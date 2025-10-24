@@ -9,3 +9,4 @@ ansible-playbook-lint
 ansible-pylibssh
 pprint
 ntc_templates
+xmltodict

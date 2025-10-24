@@ -2,11 +2,6 @@ import json
 import requests
 requests.packages.urllib3.disable_warnings()
 
-router_ip = "10.0.15.64"
-
-api_url = f"https://{router_ip}/restconf/data/ietf-interfaces:interfaces/interface="
-api_url_status = f"https://{router_ip}/restconf/data/ietf-interfaces:interfaces-state/interface="
-
 headers = {
     "Accept": "application/yang-data+json",
     "Content-Type": "application/yang-data+json"
@@ -14,19 +9,21 @@ headers = {
 
 basicauth = ("admin", "cisco")
 
-def check_interface(loopback_name, retries=3):
-    url = api_url + loopback_name
+router_method = None
+
+def check_interface(loopback_name, router_ip, retries=3):
+    api_url = f"https://{router_ip}/restconf/data/ietf-interfaces:interfaces/interface="
     for i in range(retries):
-        resp = requests.get(url, auth=basicauth, headers=headers, verify=False)
+        resp = requests.get(api_url + loopback_name, auth=basicauth, headers=headers, verify=False)
         if resp.status_code == 200:
             return 200
     print(f"Checking {loopback_name}: {resp.status_code}, {resp.text}")
     return resp.status_code
 
 
-def create(studentID):
+def create(studentID, router_ip):
     loopback_name = f"Loopback{studentID}"
-    if check_interface(loopback_name) == 200:
+    if check_interface(loopback_name, router_ip) == 200:
         return f"Cannot create: Interface {loopback_name}"
 
     last3 = int(str(studentID)[-3:])
@@ -48,6 +45,7 @@ def create(studentID):
         }
     }
 
+    api_url = f"https://{router_ip}/restconf/data/ietf-interfaces:interfaces/interface="
     resp = requests.put(
         api_url + loopback_name,
         data=json.dumps(yangConfig),
@@ -57,19 +55,20 @@ def create(studentID):
     )
     
     print("PUT Response:", resp.status_code, resp.text)
-
     if(resp.status_code >= 200 and resp.status_code <= 299):
         print("STATUS OK: {}".format(resp.status_code))
-        return f"Interface {loopback_name} is created successfully"
+        return f"Interface {loopback_name} is created successfully using Restconf"
     else:
         print('Error. Status Code: {}'.format(resp.status_code))
+        return f"Cannot create: Interface {loopback_name}"
 
 
-def delete(studentID):
+def delete(studentID, router_ip):
     loopback_name = f"Loopback{studentID}"
     if check_interface(loopback_name) != 200:
         return f"Cannot delete: Interface {loopback_name}"
     
+    api_url = f"https://{router_ip}/restconf/data/ietf-interfaces:interfaces/interface="
     resp = requests.delete(
         api_url + loopback_name,
         auth=basicauth,
@@ -79,14 +78,15 @@ def delete(studentID):
 
     if(resp.status_code >= 200 and resp.status_code <= 299):
         print("STATUS OK: {}".format(resp.status_code))
-        return f"Interface {loopback_name} is deleted successfully"
+        return f"Interface {loopback_name} is deleted successfully using Restconf"
     else:
         print('Error. Status Code: {}'.format(resp.status_code))
+        return f"Cannot delete: Interface {loopback_name}"
 
 
-def enable(studentID):
+def enable(studentID, router_ip):
     loopback_name = f"Loopback{studentID}"
-    if check_interface(loopback_name) != 200:
+    if check_interface(loopback_name, router_ip) != 200:
         return f"Cannot enable: Interface {loopback_name}"
     
     yangConfig = {
@@ -95,6 +95,7 @@ def enable(studentID):
         }
     }
 
+    api_url = f"https://{router_ip}/restconf/data/ietf-interfaces:interfaces/interface="
     resp = requests.patch(
         api_url + loopback_name,
         data=json.dumps(yangConfig),
@@ -105,15 +106,16 @@ def enable(studentID):
 
     if(resp.status_code >= 200 and resp.status_code <= 299):
         print("STATUS OK: {}".format(resp.status_code))
-        return f"Interface {loopback_name} is enabled successfully"
+        return f"Interface {loopback_name} is enabled successfully using Restconf"
     else:
         print('Error. Status Code: {}'.format(resp.status_code))
+        return f"Cannot enable: Interface {loopback_name}"
 
 
-def disable(studentID):
+def disable(studentID, router_ip):
     loopback_name = f"Loopback{studentID}"
-    if check_interface(loopback_name) != 200:
-        return f"Cannot shutdown: Interface {loopback_name}"
+    if check_interface(loopback_name,, router_ip) != 200:
+        return f"Cannot shutdown: Interface {loopback_name} (checked by Restconf)"
     
     yangConfig = {
         "ietf-interfaces:interface": {
@@ -121,6 +123,7 @@ def disable(studentID):
         }
     }
 
+    api_url = f"https://{router_ip}/restconf/data/ietf-interfaces:interfaces/interface="
     resp = requests.patch(
         api_url + loopback_name,
         data=json.dumps(yangConfig),
@@ -131,16 +134,17 @@ def disable(studentID):
 
     if(resp.status_code >= 200 and resp.status_code <= 299):
         print("STATUS OK: {}".format(resp.status_code))
-        return f"Interface {loopback_name} is disabled successfully"
+        return f"Interface {loopback_name} is disabled successfully using Restconf"
     else:
         print('Error. Status Code: {}'.format(resp.status_code))
+        return f"Cannot shutdown: Interface {loopback_name} (checked by Restconf)"
 
 
-def status(studentID):
+def status(studentID, router_ip):
     loopback_name = f"Loopback{studentID}"
-    url = api_url_status + loopback_name
+    api_url_status = f"https://{router_ip}/restconf/data/ietf-interfaces:interfaces-state/interface="
 
-    resp = requests.get(url, auth=basicauth, headers=headers, verify=False)
+    resp = requests.get(api_url_status + loopback_name, auth=basicauth, headers=headers, verify=False)
 
     if(resp.status_code >= 200 and resp.status_code <= 299):
         print("STATUS OK: {}".format(resp.status_code))
@@ -148,11 +152,11 @@ def status(studentID):
         admin_status = response_json["ietf-interfaces:interface"]["admin-status"]
         oper_status = response_json["ietf-interfaces:interface"]["oper-status"]
         if admin_status == 'up' and oper_status == 'up':
-            return f"Interface {loopback_name} is enabled"
+            return f"Interface {loopback_name} is enabled (checked by Restconf)"
         elif admin_status == 'down' and oper_status == 'down':
-            return f"Interface {loopback_name} is disabled"
+            return f"Interface {loopback_name} is disabled (checked by Restconf)"
     elif(resp.status_code == 404):
         print("STATUS NOT FOUND: {}".format(resp.status_code))
-        return f"No Interface {loopback_name}"
+        return f"No Interface {loopback_name} (checked by Restconf)"
     else:
         print('Error. Status Code: {}'.format(resp.status_code))

@@ -15,6 +15,16 @@ import netmiko_final as nc
 import ansible_final as ac
 
 #######################################################################################
+# Define IPA2025 router IP addresses
+router_ip_list = [
+    "10.0.15.61",
+    "10.0.15.62",
+    "10.0.15.63",
+    "10.0.15.64",
+    "10.0.15.65",
+]
+
+#######################################################################################
 # 2. Assign the Webex access token to the variable ACCESS_TOKEN using environment variables.
 
 ACCESS_TOKEN = os.environ.get("WEBEX_TOKEN")
@@ -38,6 +48,7 @@ for room in rooms:
 # Defines a variable that will hold the roomId
 roomIdToGetMessages = os.environ.get("WEBEX_ROOM_ID")
 
+current_method = None
 
 while True:
     # always add 1 second of delay to the loop to not go over a rate limit of API calls
@@ -88,30 +99,62 @@ while True:
             parts = message.split()
             studentID = parts[0][1:]
             command = parts[1].lower()
-            method = None   # 'restconf' or 'netconf'
-            router_ip = None
-            command = None
-            args = []
         except IndexError:
             continue
         print(command)
 
+        router_ip = None
+        method = None
+
+        # select between "restconf" and "netconf" method
+        if command in ["restconf", "netconf"]:
+            current_method = command.capitalize()
+            responseMessage = f"Ok: {current_method}"
+            # e.g. /66070024 create (no IP or method)
+            responseMessage = "Error: No method specified"
+        elif len(parts) >= 3:
+            router_ip = parts[1]
+            command = parts[2].lower()
+        else:
+            responseMessage = "Error: No command found."
+
 # 5. Complete the logic for each command
 
-        if command == "create":
-            responseMessage = rc.create(studentID)
-        elif command == "delete":
-            responseMessage = rc.delete(studentID)
-        elif command == "enable":
-            responseMessage = rc.enable(studentID)
-        elif command == "disable":
-            responseMessage = rc.disable(studentID)
-        elif command == "status":
-            responseMessage = rc.status(studentID)
+        if command in ["create", "delete", "enable", "disable", "status"]:
+            if not router_ip:
+                responseMessage = "Error: No IP specified"
+            elif router_ip not in router_ip_list:
+                responseMessage = f"Error: Invalid IP, no {router_ip} in IPA2025"
+            elif "current_method" not in locals() or current_method is None:
+                responseMessage = "Error: No method specified"
+            elif current_method == "restconf":
+                if command == "create":
+                    responseMessage = rc.create(studentID, router_ip)
+                elif command == "delete":
+                    responseMessage = rc.delete(studentID, router_ip)
+                elif command == "enable":
+                    responseMessage = rc.enable(studentID, router_ip)
+                elif command == "disable":
+                    responseMessage = rc.disable(studentID, router_ip)
+                elif command == "status":
+                    responseMessage = rc.status(studentID, router_ip)
+            elif current_method == "netconf":
+                if command == "create":
+                    responseMessage = nc.create(studentID, router_ip)
+                elif command == "delete":
+                    responseMessage = nc.delete(studentID, router_ip)
+                elif command == "enable":
+                    responseMessage = nc.enable(studentID, router_ip)
+                elif command == "disable":
+                    responseMessage = nc.disable(studentID, router_ip)
+                elif command == "status":
+                    responseMessage = nc.status(studentID, router_ip)
         elif command == "gigabit_status":
             responseMessage = nc.gigabit_status()
         elif command == "showrun":
             responseMessage = ac.showrun(studentID)
+        elif command in ["restconf", "netconf"]:
+            pass
         else:
             responseMessage = "Error: No command or unknown command"
         
