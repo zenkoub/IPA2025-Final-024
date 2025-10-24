@@ -11,7 +11,8 @@ import json
 import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 import restconf_final as rc
-import netmiko_final as nc
+import netconf_final as nc
+import netmiko_final as nm
 import ansible_final as ac
 
 #######################################################################################
@@ -154,7 +155,7 @@ while True:
                 elif command == "status":
                     responseMessage = nc.status(studentID, router_ip)
         elif command == "gigabit_status":
-            responseMessage = nc.gigabit_status()
+            responseMessage = nm.gigabit_status()
         elif command == "showrun":
             responseMessage = ac.showrun(studentID)
         elif command in ["restconf", "netconf"]:
