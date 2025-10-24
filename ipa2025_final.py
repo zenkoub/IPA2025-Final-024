@@ -92,130 +92,129 @@ while True:
     messages = json_data["items"]
     
     # store the text of the first message in the array
-    message = messages[0]["text"]
-    print("Received message: " + message)
+    message = messages[0]["text"].strip()
 
     # check if the text of the message starts with the magic character "/" followed by your studentID and a space and followed by a command name
     #  e.g.  "/66070024 create"
-    if message.startswith("/66070024"):
-        try:
-            parts = message.split()
-            studentID = parts[0][1:]
-            command = parts[1].strip().lower()
-        except IndexError:
-            continue
-        print(command)
+    # Only process messages that start with the student ID; skip others
+    if not message.startswith("/66070024"):
+        continue
+    print("Received message: " + message)
+    try:
+        parts = message.split()
+        studentID = parts[0][1:]
+        command = parts[1].strip().lower()
+    except IndexError:
+        continue
+    print(command)
 
-        router_ip = None
-        method = None
-        
-        print("Raw command:", parts[1])
-        print("Stripped & lower:", command)
+    router_ip = None
+    method = None
 
-        # select between "restconf" and "netconf" method
-        if command in ["restconf", "netconf"]:
-            # set the method (lowercase) and confirm to the room
-            current_method = command
-            responseMessage = f"Ok: {current_method}"
-        elif len(parts) >= 3:
-            router_ip = parts[1]
-            command = parts[2].lower()
-        else:
-            responseMessage = "Error: No command found."
+    # select between "restconf" and "netconf" method
+    if command in ["restconf", "netconf"]:
+        # set the method (lowercase) and confirm to the room
+        current_method = command
+        responseMessage = f"Ok: {current_method}"
+    elif len(parts) >= 3:
+        router_ip = parts[1]
+        command = parts[2].lower()
+    else:
+        responseMessage = "Error: No command found."
 
 # 5. Complete the logic for each command
 
-        if command in ["create", "delete", "enable", "disable", "status"]:
-            if not router_ip:
-                responseMessage = "Error: No IP specified"
-            elif router_ip not in router_ip_list:
-                responseMessage = f"Error: Invalid IP, no {router_ip} in IPA2025"
-            elif current_method is None:
-                responseMessage = "Error: No method specified"
-            elif current_method == "restconf":
-                if command == "create":
-                    responseMessage = rc.create(studentID, router_ip)
-                elif command == "delete":
-                    responseMessage = rc.delete(studentID, router_ip)
-                elif command == "enable":
-                    responseMessage = rc.enable(studentID, router_ip)
-                elif command == "disable":
-                    responseMessage = rc.disable(studentID, router_ip)
-                elif command == "status":
-                    responseMessage = rc.status(studentID, router_ip)
-            elif current_method == "netconf":
-                if command == "create":
-                    responseMessage = nc.create(studentID, router_ip)
-                elif command == "delete":
-                    responseMessage = nc.delete(studentID, router_ip)
-                elif command == "enable":
-                    responseMessage = nc.enable(studentID, router_ip)
-                elif command == "disable":
-                    responseMessage = nc.disable(studentID, router_ip)
-                elif command == "status":
-                    responseMessage = nc.status(studentID, router_ip)
-        elif command == "gigabit_status":
-            responseMessage = nm.gigabit_status()
-        elif command == "showrun":
-            responseMessage = ac.showrun(studentID)
-        elif command in ["restconf", "netconf"]:
-            pass
-        else:
-            responseMessage = "Error: No command or unknown command"
+    if command in ["create", "delete", "enable", "disable", "status"]:
+        if not router_ip:
+            responseMessage = "Error: No IP specified"
+        elif router_ip not in router_ip_list:
+            responseMessage = f"Error: Invalid IP, no {router_ip} in IPA2025"
+        elif current_method is None:
+            responseMessage = "Error: No method specified"
+        elif current_method == "restconf":
+            if command == "create":
+                responseMessage = rc.create(studentID, router_ip)
+            elif command == "delete":
+                responseMessage = rc.delete(studentID, router_ip)
+            elif command == "enable":
+                responseMessage = rc.enable(studentID, router_ip)
+            elif command == "disable":
+                responseMessage = rc.disable(studentID, router_ip)
+            elif command == "status":
+                responseMessage = rc.status(studentID, router_ip)
+        elif current_method == "netconf":
+            if command == "create":
+                responseMessage = nc.create(studentID, router_ip)
+            elif command == "delete":
+                responseMessage = nc.delete(studentID, router_ip)
+            elif command == "enable":
+                responseMessage = nc.enable(studentID, router_ip)
+            elif command == "disable":
+                responseMessage = nc.disable(studentID, router_ip)
+            elif command == "status":
+                responseMessage = nc.status(studentID, router_ip)
+    elif command == "gigabit_status":
+        responseMessage = nm.gigabit_status()
+    elif command == "showrun":
+        responseMessage = ac.showrun(studentID)
+    elif command in ["restconf", "netconf"]:
+        pass
+    else:
+        responseMessage = "Error: No command or unknown command"
         
 # 6. Complete the code to post the message to the Webex Teams room.
 
-        # The Webex Teams POST JSON data for command showrun
-        # - "roomId" is is ID of the selected room
-        # - "text": is always "show running config"
-        # - "files": is a tuple of filename, fileobject, and filetype.
+    # The Webex Teams POST JSON data for command showrun
+    # - "roomId" is is ID of the selected room
+    # - "text": is always "show running config"
+    # - "files": is a tuple of filename, fileobject, and filetype.
+
+    # the Webex Teams HTTP headers, including the Authoriztion and Content-Type
+        
+    # Prepare postData and HTTPHeaders for command showrun
+    # Need to attach file if responseMessage is 'ok'; 
+    # Read Send a Message with Attachments Local File Attachments
+    # https://developer.webex.com/docs/basics for more detail
+
+    if command == "showrun" and responseMessage != "Error: Ansible":
+        filename = responseMessage
+        fileobject = open(filename, "rb")
+        filetype = "text/plain"
+            
+        postData = {
+            "roomId": roomIdToGetMessages,
+            "text": "show running config",
+            "files": (filename, fileobject, filetype),
+        }
+ 
+        postData = MultipartEncoder(postData)
+        HTTPHeaders = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
+            "Content-Type": postData.content_type,
+        }
+    # other commands only send text, or no attached file.
+    else:
+        print("Response:", responseMessage)
+
+        postData = {"roomId": roomIdToGetMessages, "text": responseMessage}
+        postData = json.dumps(postData)
 
         # the Webex Teams HTTP headers, including the Authoriztion and Content-Type
+        HTTPHeaders = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
+            "Content-Type": "application/json",
+        }   
+
+    # Post the call to the Webex Teams message API.
+    r = requests.post(
+        "https://webexapis.com/v1/messages",
+        data=postData,
+        headers=HTTPHeaders,
+    )
         
-        # Prepare postData and HTTPHeaders for command showrun
-        # Need to attach file if responseMessage is 'ok'; 
-        # Read Send a Message with Attachments Local File Attachments
-        # https://developer.webex.com/docs/basics for more detail
-
-        if command == "showrun" and responseMessage != "Error: Ansible":
-            filename = responseMessage
-            fileobject = open(filename, "rb")
-            filetype = "text/plain"
-            
-            postData = {
-                "roomId": roomIdToGetMessages,
-                "text": "show running config",
-                "files": (filename, fileobject, filetype),
-            }
-            
-            postData = MultipartEncoder(postData)
-            HTTPHeaders = {
-                "Authorization": f"Bearer {ACCESS_TOKEN}",
-                "Content-Type": postData.content_type,
-            }
-        # other commands only send text, or no attached file.
-        else:
-            print("Response:", responseMessage)
-
-            postData = {"roomId": roomIdToGetMessages, "text": responseMessage}
-            postData = json.dumps(postData)
-
-            # the Webex Teams HTTP headers, including the Authoriztion and Content-Type
-            HTTPHeaders = {
-                "Authorization": f"Bearer {ACCESS_TOKEN}",
-                "Content-Type": "application/json",
-            }   
-
-        # Post the call to the Webex Teams message API.
-        r = requests.post(
-            "https://webexapis.com/v1/messages",
-            data=postData,
-            headers=HTTPHeaders,
+    print("Webex POST response:", r.status_code, r.text)
+        
+    if not r.status_code in [200, 201]:
+        raise Exception(
+            "Incorrect reply from Webex Teams API. Status code: {}".format(r.status_code)
         )
-        
-        print("Webex POST response:", r.status_code, r.text)
-        
-        if not r.status_code in [200, 201]:
-            raise Exception(
-                "Incorrect reply from Webex Teams API. Status code: {}".format(r.status_code)
-            )

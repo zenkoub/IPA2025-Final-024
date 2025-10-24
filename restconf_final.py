@@ -65,7 +65,7 @@ def create(studentID, router_ip):
 
 def delete(studentID, router_ip):
     loopback_name = f"Loopback{studentID}"
-    if check_interface(loopback_name) != 200:
+    if check_interface(loopback_name, router_ip) != 200:
         return f"Cannot delete: Interface {loopback_name}"
     
     api_url = f"https://{router_ip}/restconf/data/ietf-interfaces:interfaces/interface="
