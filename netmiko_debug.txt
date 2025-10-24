@@ -1,5 +1,5 @@
 
-abc def
+High TemplaZ 555
 
 
 
@@ -11,7 +11,7 @@ IPA-Router4#
 IPA-Router4#terminal length 0
 IPA-Router4#
 IPA-Router4#show banner motd
-abc def
+High TemplaZ 555
 
 IPA-Router4#
 IPA-Router4#exit
