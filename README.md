@@ -1,6 +1,8 @@
 # IPA2025-Final-024
 คู่บุญ กฤตเนติทัศน์ 66070024 IPA Final 2025
 
+https://docs.google.com/document/d/1dg_xUWTVUqLF2OBIPSmdHfoQpnDD1Q5B0xwLPX8sULM/edit?usp=sharing
+
 ✅ Fork/Clone IPA2024-Final \
 ✅ Create  and use Python virtual environment \
 ✅ Save and use the WebEx token in the environment variable in IPA2024_final.py \
